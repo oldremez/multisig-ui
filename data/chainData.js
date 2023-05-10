@@ -337,7 +337,7 @@ export const chainData = [
         valExplorer: "https://testnet.mintscan.io/noble-testnet/validators/",
         govExplorer: "https://testnet.mintscan.io/noble-testnet/proposals/",
         logo: "/images/logo/noble.png",
-        hyperLink: "https://raw.githubusercontent.com/"
+        hyperLink: "https://nobleassets.xyz/"
     },
     {
         chain_id: "quicksilver-2",
