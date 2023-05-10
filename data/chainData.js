@@ -359,7 +359,7 @@ export const chainData = [
         logo: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qck.png",
         hyperLink: "https://quicksilver.zone/"
     },
-     {
+    {
         chain_id: "chihuahua-1",
         denom: "uhuahua",
         displayDenom: "huahua",
@@ -378,6 +378,26 @@ export const chainData = [
         govExplorer: "https://www.mintscan.io/chihuahua/proposals",
         logo: "/images/logo/chihuahua.png",
         hyperLink: "https://www.chihuahua.wtf"
+    },
+    {
+        chain_id: "neutron-1",
+        denom: "untrn",
+        displayDenom: "ntrn",
+        base_denom: {
+            "denom": "untrn",
+            "exponent": 6
+        },
+        name: "neutron",
+        prefix: "neutron",
+        color: "linear-gradient(to right, #6610f2,#F0A841 75%)", // todo
+        rpc: "https://chihuahua-rpc.polkachu.com", // todo
+        api: "https://chihuahua-api.polkachu.com", // todo
+        explorer: "https://www.mintscan.io/chihuahua", // todo
+        txExplorer: "https://www.mintscan.io/chihuahua/blocks", // todo
+        valExplorer: "https://www.mintscan.io/chihuahua/validators", // todo
+        govExplorer: "https://www.mintscan.io/chihuahua/proposals", // todo
+        logo: "/images/logo/neutron.png",
+        hyperLink: "https://neutron.org"
     },
 ]
 
@@ -401,6 +421,7 @@ export const prefixToId = {
     "noble": 16,
     "quick": 17,
     "chihuahua": 18,
+    "neutron": 19,
 }
 
 
@@ -423,7 +444,8 @@ export const idToChainId = {
     15: "migaloo-1",
     16: "grand-1",
     17: "quicksilver-2",
-    18: "chihuahua-1"
+    18: "chihuahua-1",
+    19: "neutron-1"
 }
 
 
