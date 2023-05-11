@@ -1,19 +1,6 @@
 import axios from "axios"
 import { specialDenom } from "../data/chainData"
 
-const SI_prefix = {
-    "d": 1,
-    "c": 2,
-    "m": 3,
-    "u": 6,
-    "n": 9,
-    "p": 12,
-    "f": 15,
-    "a": 18,
-    "z": 21,
-    "y": 24
-}
-
 export const addressShortener = (addr, start = 15, end = 4) => {
     return addr && addr.slice(0, start) + "..." + addr.slice(addr.length - end, addr.length)
 }
