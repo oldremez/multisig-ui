@@ -2,11 +2,13 @@
 
 # Getting Started
 
-Firstly, go to Faunadb (https://fauna.com/) create a database and import the schema from the schema.graphql file. 
+Firstly, go to Faunadb (https://fauna.com/) create a database and import the schema from the `schema.graphql` file.
 
-Secondly, get the Secret key from faunadb. Create a .env.local file in the root directory and add the secret key.
+Secondly, get the Secret key from faunadb. Create a `.env.local` file in the root directory and add the secret key. If
+you are to use non-Classic region (e.g. EU or US), add the endpoint as well. See more info in
+[FaunaDB docs](https://docs.fauna.com/fauna/current/api/graphql/endpoints).
 
-Thirdly, add the host directory in the .env.local file
+Thirdly, add the host directory in the `.env.local` file
 
 Finally, run the development server:
 
@@ -22,6 +24,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ```
 NEXT_PUBLIC_FAUNADB_SECRET=kfsdafsda89f8ffdf-43349
+NEXT_PUBLIC_FAUNADB_GRAPHQL_ENDPOINT=https://graphql.fauna.com/graphql
 NEXT_PUBLIC_HOST=http://localhost:3000/
 ```
 
@@ -42,6 +45,7 @@ NEXT_PUBLIC_HOST=http://localhost:3000/
 13. Pylon
 14. Stride
 15. Migaloo ( White Whale )
+16. Neutron
 
 Will add more chains in the future
 

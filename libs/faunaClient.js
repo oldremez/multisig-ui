@@ -7,12 +7,20 @@ const client = new faunadb.Client({
 
 const q = faunadb.query
 
-const graphqlReq = axios.create({
-  baseURL: "https://graphql.fauna.com/graphql",
-  headers: {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_FAUNADB_SECRET}`,
-  },
-});
+const graphqlReq = async (...args) => {
+  const a = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_FAUNADB_GRAPHQL_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_FAUNADB_SECRET}`,
+    },
+  })
+  const r = await a(...args);
+
+  if (r.data.errors) {
+    console.log(r.data.errors[0].message);
+  }
+  return r;
+}
 
 export const deletePreviousSig = async (address) => {
   // delete all previous signature when new tx is broadcast
