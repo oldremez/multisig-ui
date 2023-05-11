@@ -7,14 +7,22 @@ const client = new faunadb.Client({
 
 const q = faunadb.query
 
-const graphqlReq = async (...args) => {
+const graphqlReq = async (query) => {
+  console.log(query)
+  const arg = {
+    method: "POST",
+    data: {
+      query,
+    },
+  };
+
   const a = axios.create({
     baseURL: process.env.NEXT_PUBLIC_FAUNADB_GRAPHQL_ENDPOINT,
     headers: {
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_FAUNADB_SECRET}`,
     },
   })
-  const r = await a(...args);
+  const r = await a(arg);
 
   if (r.data.errors) {
     console.log(r.data.errors[0].message);
@@ -22,313 +30,220 @@ const graphqlReq = async (...args) => {
   return r;
 }
 
-export const deletePreviousSig = async (address) => {
-  // delete all previous signature when new tx is broadcast
-  const helper = await client.paginate(
-    q.Match(
-      q.Index('getSignaturesFromAddress'),
-      address
-    ),
-  ).each(function (signatures) {
-    signatures.map(async (signature) => {
-      await client.query(
-        q.Delete(
-          q.Ref(signature)
-        )
-      )
-    })
-  })
-}
-
 export const createMultisig = async (multisig) => {
   let multisigByAddressMutation = ''
 
   multisig.components.map((address, index) => {
-    const mutation =
-      `alias${index}: createMultisigByAddress(
-                data: { address: "${multisig.address}", createFrom: "${address}" }
-            ) {
-                address
-            }`
+    const mutation = `
+      alias${index}:
+        createMultisigByAddress(
+          data: { 
+            address: "${multisig.address}", 
+            createFrom: "${address}" 
+          }
+        ) {
+          address
+        }`
     multisigByAddressMutation = multisigByAddressMutation + mutation + '\n'
   })
 
   const date = new Date()
 
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-            mutation {
-              createMultisig(data: {
-                address: "${multisig.address}",
-                pubkeyJSON: ${JSON.stringify(multisig.pubkeyJSON)},
-                prefix: "${multisig.prefix}"
-                createdOn: "${date.toISOString()}"
-              }) {
-                _id
-                address
-              }
+  const query = `
+    mutation {
+      createMultisig(data: {
+        address: "${multisig.address}",
+        pubkeyJSON: ${JSON.stringify(multisig.pubkeyJSON)},
+        prefix: "${multisig.prefix}"
+        createdOn: "${date.toISOString()}"
+      }) {
+        _id
+        address
+      }
 
-              ${multisigByAddressMutation}
-            }
-          `,
-    },
-  });
-
-  return res
+      ${multisigByAddressMutation}
+    }`;
+  return await graphqlReq(query);
 }
 
 export const getMultisigByAddress = async (address) => {
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-            query {
-                getMultisig(address: "${address.address}") {
-                  address
-                  pubkeyJSON
-                  prefix
-                  createdOn
-                }
-              }
-          `
-    },
-  })
-  return res
+  const query = `
+    query {
+      getMultisig(address: "${address.address}") {
+        address
+        pubkeyJSON
+        prefix
+        createdOn
+      }
+    }`;
+  return await graphqlReq(query);
 }
 
 export const getMultisigOfAddress = async (address) => {
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-            query{
-                getAllMultisigByAddress(
-                    createFrom: "${address.address}"
-                ) {
-                    data {
-                      address
-                    }
-                }
-            }
-          `
-    },
-  })
-  return res
+  const query = `
+    query{
+      getAllMultisigByAddress(
+          createFrom: "${address.address}"
+      ) {
+          data {
+            address
+          }
+      }
+    }`;
+  return await graphqlReq(query);
 }
 
 export const createTransaction = async (transaction) => {
   const date = new Date()
+  console.log(transaction)
 
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-            mutation {
-              createTransaction(data: {
-                createBy: "${transaction.createBy}",
-                dataJSON: ${JSON.stringify(transaction.dataJSON)},
-                status: "PENDING"
-                createdOn: "${date.toISOString()}"
-              }) {
-                _id
-              }
-            }
-          `,
-    },
-  })
-  return res
+  const query = `
+    mutation {
+      createTransaction(
+        data: {
+          createBy: "${transaction.createBy}",
+          dataJSON: ${JSON.stringify(transaction.dataJSON)},
+          status: "PENDING"
+          createdOn: "${date.toISOString()}"
+        }) {
+          _id
+        }
+    }`;
+  console.log(query)
+
+  return await graphqlReq(query);
 }
 
 export const getTransaction = async (id) => {
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-                query {
-                    findTransactionByID(id: "${id}") {
-                    _id
-                    createBy
-                    txHash
-                    signatures {
-                      data {
-                        _id
-                        address
-                        signature
-                        bodyBytes
-                        accountNumber
-                        sequence
-                      }
-                    }
-                    dataJSON
-                  }
-                }
-          `,
-    },
-  })
-  return res
-}
-
-export const getTransactionByStatus = async (address) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          createSignature(data: {
-            transaction: {connect: ${transactionId}}, 
-            bodyBytes: "${signature.bodyBytes}",
-            signature: "${signature.signature}",
-            address: "${signature.address}" 
-          }) {
+  const query = `
+    query {
+      findTransactionByID(id: "${id}") {
+        _id
+        createBy
+        txHash
+        signatures {
+          data {
             _id
             address
             signature
-            address
+            bodyBytes
+            accountNumber
+            sequence
           }
         }
-      `,
-    },
-  });
+        dataJSON
+      }
+    }`;
+  return await graphqlReq(query);
 }
 
 export const createSignature = async (signature, transactionId) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          createSignature(data: {
-            transaction: {connect: ${transactionId}}, 
-            bodyBytes: "${signature.bodyBytes}",
-            signature: "${signature.signature}",
-            address: "${signature.address}",
-            accountNumber: ${signature.accountNumber},
-            sequence: ${signature.sequence}
-          }) {
-            _id
-            address
-            signature
-            accountNumber
-            sequence
-            bodyBytes
-          }
-        }
-      `,
-    },
-  });
+  const query = `
+    mutation {
+      createSignature(data: {
+        transaction: {connect: ${transactionId}}, 
+        bodyBytes: "${signature.bodyBytes}",
+        signature: "${signature.signature}",
+        address: "${signature.address}",
+        accountNumber: ${signature.accountNumber},
+        sequence: ${signature.sequence}
+      }) {
+        _id
+        address
+        signature
+        accountNumber
+        sequence
+        bodyBytes
+      }
+    }`;
+  return await graphqlReq(query);
 };
 
 export const updateSignature = async (signature, transactionId) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          updateSignature(id: "${signature.id}",
-             data: { 
-              transaction: {connect: ${transactionId}}, 
-              bodyBytes: "${signature.bodyBytes}",
-              signature: "${signature.signature}",
-              address: "${signature.address}",
-              accountNumber: ${signature.accountNumber},
-              sequence: ${signature.sequence}
-            }) {
-              _id
-              address
-              signature
-              bodyBytes
-              accountNumber
-              sequence
-            }
+  const query = `
+    mutation {
+      updateSignature(id: "${signature.id}",
+         data: { 
+          transaction: {connect: ${transactionId}}, 
+          bodyBytes: "${signature.bodyBytes}",
+          signature: "${signature.signature}",
+          address: "${signature.address}",
+          accountNumber: ${signature.accountNumber},
+          sequence: ${signature.sequence}
+        }) {
+          _id
+          address
+          signature
+          bodyBytes
+          accountNumber
+          sequence
         }
-      `,
-    },
-  });
+    }`;
+  return await graphqlReq(query);
 };
 
 export const deleteSignature = async (id) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          deleteSignature(id: "${id}") {
-              _id
-            }
+  const query = `
+    mutation {
+      deleteSignature(id: "${id}") {
+          _id
         }
-      `,
-    },
-  });
+      }
+    }`;
+  return await graphqlReq(query);
 }
 
 export const updateTransaction = async (txHash, transactionID, multisigID) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          updateTransaction(id: ${transactionID}, 
-            data: {
-              txHash: "${txHash}",
-              status: "FINISHED",
-              createBy: "${multisigID}"
-            }) {
+  const query = `
+    mutation {
+      updateTransaction(id: ${transactionID}, 
+        data: {
+          txHash: "${txHash}",
+          status: "FINISHED",
+          createBy: "${multisigID}"
+        }) {
+        _id
+        dataJSON
+        txHash
+        signatures {
+          data {
             _id
-            dataJSON
-            txHash
-            signatures {
-              data {
-                _id
-                address
-                signature
-                bodyBytes
-                accountNumber
-                sequence
-              }
-            }
+            address
+            signature
+            bodyBytes
+            accountNumber
+            sequence
           }
         }
-      `,
-    },
-  });
+      }
+    }`;
+  return await graphqlReq(query);
 }
 
 export const deleteTransaction = async (id) => {
-  return graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        mutation {
-          deleteTransaction(id: "${id}") {
-              _id
-            }
+  const query = `
+    mutation {
+      deleteTransaction(id: "${id}") {
+          _id
         }
-      `,
-    },
-  });
+    }
+  }`;
+  return await graphqlReq(query);
 }
 
 
 export const getTransactionsOfMultisig = async (multisig) => {
-  const res = await graphqlReq({
-    method: "POST",
-    data: {
-      query: `
-        query {
-          getTxByMultisig(createBy: "${multisig}"){
-            data{
-              _id
-              createdOn
-              dataJSON
-              status
-              txHash
-            }
-          }
+  const query = `
+    query {
+      getTxByMultisig(createBy: "${multisig}"){
+        data{
+          _id
+          createdOn
+          dataJSON
+          status
+          txHash
         }
-      `,
-    },
-  })
-  return res
+      }
+    }`;
+  return await graphqlReq(query);
 }
