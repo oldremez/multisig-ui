@@ -389,7 +389,7 @@ export const chainData = [
         },
         name: "neutron",
         prefix: "neutron",
-        color: "linear-gradient(to right, #6610f2,#F0A841 75%)", // todo
+        color: "linear-gradient(90deg, rgba(0,84,167,1) 0%, rgba(0,0,0,1) 38%, rgba(0,146,147,1) 100%)",
         rpc: "https://rpc-kralum.neutron-1.neutron.org/",
         api: "https://rest-kralum.neutron-1.neutron.org/",
         explorer: "https://www.mintscan.io/neutron",
