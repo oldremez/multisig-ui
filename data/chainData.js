@@ -390,12 +390,12 @@ export const chainData = [
         name: "neutron",
         prefix: "neutron",
         color: "linear-gradient(to right, #6610f2,#F0A841 75%)", // todo
-        rpc: "https://chihuahua-rpc.polkachu.com", // todo
-        api: "https://chihuahua-api.polkachu.com", // todo
-        explorer: "https://www.mintscan.io/chihuahua", // todo
-        txExplorer: "https://www.mintscan.io/chihuahua/blocks", // todo
-        valExplorer: "https://www.mintscan.io/chihuahua/validators", // todo
-        govExplorer: "https://www.mintscan.io/chihuahua/proposals", // todo
+        rpc: "https://rpc-kralum.neutron-1.neutron.org/",
+        api: "https://rest-kralum.neutron-1.neutron.org/",
+        explorer: "https://www.mintscan.io/neutron",
+        txExplorer: "https://www.mintscan.io/neutron/blocks",
+        valExplorer: "https://www.mintscan.io/neutron/validators",
+        govExplorer: "https://www.mintscan.io/neutron/proposals",
         logo: "/images/logo/neutron.png",
         hyperLink: "https://neutron.org"
     },
