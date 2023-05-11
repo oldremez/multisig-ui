@@ -159,12 +159,12 @@ const DelegateMsg = ({ chain, address, msgs, setMsgs, style }) => {
                         margin: 0
                     }}
                 >
-                    {`Amount (${chain.denom.substring(1).toUpperCase()})`}
+                    {`Amount (${chain.displayDenom.toUpperCase()})`}
                 </h4>
                 <InputNumber
                     onChange={handleInputNumber}
                     value={txBody.amount}
-                    label={`Amount (${chain.denom.substring(1).toUpperCase()})`}
+                    label={`Amount (${chain.displayDenom.toUpperCase()})`}
                     name="amount"
                     placeholder="Amount"
                     style={{
